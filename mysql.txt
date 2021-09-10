@@ -1,0 +1,94 @@
+1. conncet to mysql
+      C:\Users\USER>  cd C:\Bitnami\wampstack-8.0.3-1\mysql\bin
+
+      C:\Bitnami\wampstack-8.0.3-1\mysql\bin> mysql -uroot -p  or  mysql -uproot -p
+
+      Enter password: ********
+      ERROR 1045 (28000): Access denied for user 'proot'@'localhost' (using password: YES)
+      -> C:\Bitnami\wampstack-8.0.3-1\mysql\bin>mysql -u root -p
+
+*업데이트나 딜리트 시 주의할점
+      UPDATE author SET profile='database administrator' WHERE id=2;
+      WHERE !!!!!!
+
+*한계에 부딪혀서 충분히 절망한 그 순간이 혁신을 향해 나아갈 순간이다.
+
+2. command
+      mysql> CREATE DATABASE opentutorals3;
+      mysql> show databases;
+      mysql> use opentutorals3;
+      mysql> show tables;
+      mysql> select * from topic;   "topic" is one of tables
+      mysql> exit
+
+--------------------------------------------------------------
+3. nodejs + mysql
+      1) set up order
+            (1) npm install --save mysql
+                or
+                npm install mysql
+            (2) Create db and tables
+            (3) Copy and Paste example.sql in terminal
+            (4) Do 4.
+      2) $ node mysql.js
+            -> Error: ER_ACCESS_DENIED_ERROR
+            -> https://www.youtube.com/watch?v=bOkqOJbWPLM&list=PLuHgQVnccGMAicFFRh8vFFFtLLlNojWUh&index=4
+
+      3) [object object]
+            -> like this,   topics[i] -> topic[i].title 
+
+      4) nodejs + mysql : Change all fs.func() to db.query() 
+      5) main.js vs main_min.js
+            main.js require only template.js among lib
+            main.js is no need
+         * module.exports vs exports
+           1st: There is only one module.
+           2nd: When providing multiple APIs in one file
+      6) Sytax of a query func
+            db.query(
+                  `SELECT * FROM topic LEFT JOIN author ON topic.author_id=author.id WHERE topic.id=?`, 
+                  [queryData.id], 
+                  function(error2, topic){ Play with "topic" })
+            (1) The query's 1st arg is sql syntax.   
+                You can check what sql문 will be sent to "db"
+                var query = db.query(); console.log(query.sql);
+                (query method has its return value)
+                Click any topic list on web
+            (2) The last one is a callback. Its 2nd arg, "topic", is the rusult about sql(=desc according to id)
+
+      7) throw
+            nodejs stop running and print error as concole and stop application
+      8) Security - SQL Injection(주입)
+            db.query(
+                  `SELECT * FROM topic LEFT JOIN author ON topic.author_id=author.id WHERE topic.id=?`,
+                  [queryData.id],
+            : Instead of "SELECT * FROM topic WHERE id=${queryData.id}"
+              물음표 갯수 만큼 배열을 채움
+              The 2nd arg is optional. 
+              If a user type "localhost:3000/?id=1;DROP TABLE topic" in url, process sql to string.
+              * The db.query method prevent running multiply statements at a time though.
+              Another way is id=${db.escape(queryData.id)}`;
+      9) Security - senitize-html : escaping typeing js
+            (1) npm install --save sanitize-html
+            (2) var sanitizeHtml = require('sanitize-html');
+            (3) ex) ${title} -> ${sanitizeHtml(title)}
+            * Sanitize All the information to be input by the user like title, desc, name etc. There's no need to senitize string var, auto increment id.
+4. frame 
+      https://www.npmjs.com/package/mysql#install
+      var mysql      = require('mysql'); // after $ npm install --save mysql
+      var connection = mysql.createConnection({
+      host     : 'localhost',
+      user     : 'root',
+      password : 'gpdnjs09',
+      database : 'opentutorals3'
+      });
+      connection.connect(); // 여기까지  Connect to mysql
+
+      connection.query('SELECT * FROM topic', function (error, results, fields) {
+      if (error) {
+            console.log(error);
+      }
+      console.log(results); // >> 1st arg of query()
+      }); // callback func
+
+      connection.end();
