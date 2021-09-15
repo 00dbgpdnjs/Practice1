@@ -27,6 +27,7 @@
             (1) npm install --save mysql
                 or
                 npm install mysql
+                (after npm init to get a package.json file)
             (2) Create db and tables
             (3) Copy and Paste example.sql in terminal
             (4) Do 4.
